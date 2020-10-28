@@ -1,10 +1,24 @@
 package main
 
 import (
-	"github.com/goandfootball/test-api/routers"
+	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
+func welcolme(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "hello, world!")
+}
+
+func Router() http.Handler {
+	r := mux.NewRouter()
+	// Routes consist of a path and a handler function.
+	r.HandleFunc("/", welcolme).Methods("GET")
+
+	return r
+}
+
 func main() {
-	http.ListenAndServe("localhost:8080", routers.Handler())
+	http.ListenAndServe("localhost:8080", Router())
 }
