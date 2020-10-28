@@ -3,22 +3,35 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
+
+	"github.com/goandfootball/test-api/internal/server"
 )
 
-func welcolme(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "hello, world!")
-}
-
-func Router() http.Handler {
-	r := mux.NewRouter()
-	// Routes consist of a path and a handler function.
-	r.HandleFunc("/", welcolme).Methods("GET")
-
-	return r
+// Welcolme handler
+func Welcolme(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello, world!")
 }
 
 func main() {
-	http.ListenAndServe("localhost:8080", Router())
+	port := os.Getenv("PORT")
+
+	// new router
+	r := mux.NewRouter()
+	// Routers consist of a path and a handler function
+	// Welcolme path
+	r.HandleFunc("/", Welcolme).Methods("GET")
+
+	serv, err := server.New(port, r)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// start the server.
+	err = serv.Start()
+	if err != nil {
+		fmt.Println(err)
+	}
 }
