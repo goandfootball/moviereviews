@@ -1,2 +1,6 @@
-# Configuration files
-*.env
+.idea/
+.vs/
+.env
+.pk
+.pem
+.pub
