@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/goandfootball/test-api/internal/server"
+	"github.com/joho/godotenv"
 )
 
 // Welcolme handler
@@ -16,7 +17,10 @@ func Welcolme(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	port := os.Getenv("PORT")
+	err := godotenv.Load(".env.development.local")
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	// new router
 	r := mux.NewRouter()
@@ -24,6 +28,9 @@ func main() {
 	// Welcolme path
 	r.HandleFunc("/", Welcolme).Methods("GET")
 
+	port, _ := os.LookupEnv("PORT")
+
+	fmt.Println(port)
 	serv, err := server.New(port, r)
 	if err != nil {
 		fmt.Println(err)
