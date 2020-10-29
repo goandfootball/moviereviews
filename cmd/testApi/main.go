@@ -3,12 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/mux"
 
+	"github.com/goandfootball/test-api/configs"
 	"github.com/goandfootball/test-api/internal/server"
-	"github.com/joho/godotenv"
 )
 
 // Welcolme handler
@@ -17,10 +16,12 @@ func Welcolme(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	err := godotenv.Load(os.ExpandEnv("C:/workspaces/Go/src/github.com/goandfootball/test-api/.env.development.local"))
-	if err != nil {
-		fmt.Println(err)
-	}
+	/*
+		err := godotenv.Load(os.ExpandEnv("C:/workspaces/Go/src/github.com/goandfootball/test-api/.env.development.local"))
+		if err != nil {
+			fmt.Println(err)
+		}
+	*/
 
 	// new router
 	r := mux.NewRouter()
@@ -28,7 +29,10 @@ func main() {
 	// Welcolme path
 	r.HandleFunc("/", Welcolme).Methods("GET")
 
-	port, _ := os.LookupEnv("PORT")
+	port, err := configs.GetEnv("PORT") //os.LookupEnv("PORT")
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	fmt.Println(port)
 	serv, err := server.New(port, r)
