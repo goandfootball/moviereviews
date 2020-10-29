@@ -17,7 +17,7 @@ func Welcolme(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	err := godotenv.Load(".env.development.local")
+	err := godotenv.Load(os.ExpandEnv("C:/workspaces/Go/src/github.com/goandfootball/test-api/.env.development.local"))
 	if err != nil {
 		fmt.Println(err)
 	}
