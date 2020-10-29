@@ -68,4 +68,6 @@ func (usr *User) BeforeInsert() error {
 
 func (usr *User) BeforeUpdate() error {
 	usr.UpdatedAt = time.Now()
+
+	return nil
 }

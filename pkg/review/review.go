@@ -36,4 +36,6 @@ func (rev *Review) BeforeInsert() error {
 
 func (rev *Review) BeforeUpdate() error {
 	rev.UpdatedAt = time.Now()
+
+	return nil
 }
