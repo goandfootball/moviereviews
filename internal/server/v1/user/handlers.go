@@ -1,8 +1,7 @@
-package v1
+package user
 
 import (
 	"fmt"
-	"github.com/go-chi/chi"
 	"github.com/goandfootball/test-api/pkg/response"
 	"github.com/goandfootball/test-api/pkg/user"
 	"net/http"
@@ -21,12 +20,4 @@ func (ur *URouter) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.EJSON(w, r, http.StatusOK, response.Map{"users": result})
-}
-
-func (ur *URouter) UPaths() http.Handler {
-	r := chi.NewRouter()
-
-	r.Get("/", ur.GetAll)
-
-	return r
 }
