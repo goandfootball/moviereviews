@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"io/ioutil"
 
 	"github.com/goandfootball/test-api/configs"
 	"gorm.io/driver/postgres"
@@ -67,4 +68,23 @@ func getConnection() (*gorm.DB, error) {
 	}
 
 	return db, nil
+}
+
+func dbMigration(db *gorm.DB) error {
+	// 202010310222 TODO: change hardcoded path for environment variable
+	b, err := ioutil.ReadFile("./database/models.sql")
+	if err != nil {
+		return err
+	}
+
+	sqlDb, errDB := db.DB()
+	if errDB != nil {
+		return errDB
+	}
+	rows, errQuery := sqlDb.Query(string(b))
+	if errQuery != nil {
+		return errQuery
+	}
+
+	return rows.Close()
 }

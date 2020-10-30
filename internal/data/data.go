@@ -1,6 +1,8 @@
 package data
 
 import (
+	"fmt"
+	"github.com/goandfootball/test-api/configs"
 	"log"
 	"sync"
 
@@ -21,6 +23,18 @@ func initDb() {
 	db, err := getConnection()
 	if err != nil {
 		log.Panic(err)
+	}
+
+	migration, errEnv := configs.GetEnv("POSTGRES_MIGRATION")
+	if errEnv != nil {
+		fmt.Println(errEnv)
+	}
+
+	if migration == "true" {
+		errMig := dbMigration(db)
+		if errMig != nil {
+			fmt.Println("error on migration database")
+		}
 	}
 
 	data = &Data{
