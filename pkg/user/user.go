@@ -8,16 +8,16 @@ import (
 )
 
 type User struct {
-	UsrId        uint      `json:"id,omitempty"`
-	FirstName    string    `json:"first_name,omitempty"`
-	LastName     string    `json:"last_name,omitempty"`
-	Username     string    `json:"username,omitempty"`
-	Email        string    `json:"email,omitempty"`
-	Picture      string    `json:"picture,omitempty"`
-	Password     string    `json:"password,omitempty"`
+	UsrId        uint      `json:"usr_id,omitempty"`
+	FirstName    string    `json:"usr_first_name,omitempty"`
+	LastName     string    `json:"usr_last_name,omitempty"`
+	Username     string    `json:"usr_username,omitempty"`
+	Email        string    `json:"usr_email,omitempty"`
+	Password     string    `json:"usr_password,omitempty"`
+	Picture      string    `json:"usr_picture,omitempty"`
 	PasswordHash string    `json:"-"`
-	CreatedAt    time.Time `json:"created_at,omitempty"`
-	UpdatedAt    time.Time `json:"updated_at,omitempty"`
+	CreatedAt    time.Time `json:"usr_created_at,omitempty"`
+	UpdatedAt    time.Time `json:"usr_updated_at,omitempty"`
 }
 
 func (usr *User) HashPassword() error {
