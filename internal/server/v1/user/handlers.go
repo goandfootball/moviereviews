@@ -1,8 +1,7 @@
 package user
 
 import (
-	"fmt"
-	"github.com/goandfootball/test-api/pkg/response"
+	"github.com/goandfootball/test-api/pkg/responses"
 	"github.com/goandfootball/test-api/pkg/user"
 	"net/http"
 )
@@ -13,11 +12,11 @@ type URouter struct {
 
 func (ur *URouter) GetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-
+	// 202010301943 TODO: search for http errors guide
 	result, err := ur.Repository.GetAll(ctx)
 	if err != nil {
-		fmt.Println(err.Error())
+		responses.ERROR(w, http.StatusNotImplemented, err)
 	}
 
-	response.EJSON(w, r, http.StatusOK, response.Map{"users": result})
+	responses.JSON(w, http.StatusOK, result)
 }
