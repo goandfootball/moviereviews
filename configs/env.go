@@ -7,6 +7,7 @@ import (
 )
 
 func GetEnv(key string) (string, error) {
+	// Change path for development, testing or production configurationss
 	viper.SetConfigFile("C:/workspaces/Go/src/github.com/goandfootball/test-api/development-local.env")
 
 	// Find and read the config file

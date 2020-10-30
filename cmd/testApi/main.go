@@ -2,17 +2,22 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 
 	"github.com/goandfootball/test-api/configs"
+	"github.com/goandfootball/test-api/internal/data"
 	"github.com/goandfootball/test-api/internal/server"
 )
 
-// Welcolme handler
-func Welcolme(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, world!")
+// Welcome handler
+func Welcome(w http.ResponseWriter, r *http.Request) {
+	_, err := fmt.Fprintf(w, "Hello, world!")
+	if err != nil {
+		fmt.Println("error trying to print greet")
+	}
 }
 
 func main() {
@@ -26,10 +31,10 @@ func main() {
 	// new router
 	r := mux.NewRouter()
 	// Routers consist of a path and a handler function
-	// Welcolme path
-	r.HandleFunc("/", Welcolme).Methods("GET")
+	// Welcome path
+	r.HandleFunc("/", Welcome).Methods("GET")
 
-	port, err := configs.GetEnv("PORT") //os.LookupEnv("PORT")
+	port, err := configs.GetEnv("SERVER_PORT") //os.LookupEnv("PORT")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -40,6 +45,20 @@ func main() {
 		fmt.Println(err)
 	}
 
+	// connection to the database.
+	d := data.New()
+	sqlDB, errDB := d.Db.DB()
+	if errDB != nil {
+		fmt.Println(errDB)
+	}
+	if err := sqlDB.Ping(); err != nil {
+		log.Fatal(err)
+	}
+	/*
+		if err := d.Db.Ping(); err != nil {
+			log.Fatal(err)
+		}
+	*/
 	// start the server.
 	err = serv.Start()
 	if err != nil {
