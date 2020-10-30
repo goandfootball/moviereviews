@@ -1,23 +1,22 @@
 package user
 
 import (
-	"errors"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	UsrId        uint      `json:"usr_id,omitempty"`
-	FirstName    string    `json:"usr_first_name,omitempty"`
-	LastName     string    `json:"usr_last_name,omitempty"`
-	Username     string    `json:"usr_username,omitempty"`
-	Email        string    `json:"usr_email,omitempty"`
-	Password     string    `json:"usr_password,omitempty"`
-	Picture      string    `json:"usr_picture,omitempty"`
+	UsrId        uint      `json:"usr_id,omitempty" gorm:"column:usr_id"`
+	FirstName    string    `json:"usr_first_name,omitempty" gorm:"column:usr_first_name"`
+	LastName     string    `json:"usr_last_name,omitempty" gorm:"column:usr_last_name"`
+	Username     string    `json:"usr_username,omitempty" gorm:"column:usr_username"`
+	Email        string    `json:"usr_email,omitempty" gorm:"column:usr_email"`
+	Password     string    `json:"usr_password,omitempty" gorm:"column:usr_password"`
+	Picture      string    `json:"usr_picture,omitempty" gorm:"column:usr_picture"`
 	PasswordHash string    `json:"-"`
-	CreatedAt    time.Time `json:"usr_created_at,omitempty"`
-	UpdatedAt    time.Time `json:"usr_updated_at,omitempty"`
+	CreatedAt    time.Time `json:"usr_created_at,omitempty" gorm:"column:usr_created_at"`
+	UpdatedAt    time.Time `json:"usr_updated_at,omitempty" gorm:"column:usr_updated_at"`
 }
 
 func (usr *User) HashPassword() error {
@@ -40,6 +39,7 @@ func (usr User) PasswordMatch(password string) bool {
 	return true
 }
 
+/*
 func (usr *User) BeforeInsert() error {
 	if usr.UsrId != 0 {
 		return errors.New("id is required")
@@ -60,7 +60,10 @@ func (usr *User) BeforeInsert() error {
 		return errors.New("password is required")
 	}
 
-	usr.HashPassword()
+	err := usr.HashPassword()
+	if err != nil {
+		return err
+	}
 	usr.CreatedAt = time.Now()
 
 	return nil
@@ -71,3 +74,4 @@ func (usr *User) BeforeUpdate() error {
 
 	return nil
 }
+*/

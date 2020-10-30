@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
-
 	"github.com/goandfootball/test-api/configs"
 	"github.com/goandfootball/test-api/internal/data"
 	"github.com/goandfootball/test-api/internal/server"
@@ -29,10 +27,10 @@ func main() {
 	*/
 
 	// new router
-	r := mux.NewRouter()
+	//r := mux.NewRouter()
 	// Routers consist of a path and a handler function
 	// Welcome path
-	r.HandleFunc("/", Welcome).Methods("GET")
+	//r.HandleFunc("/", Welcome).Methods("GET")
 
 	port, err := configs.GetEnv("SERVER_PORT") //os.LookupEnv("PORT")
 	if err != nil {
@@ -40,7 +38,7 @@ func main() {
 	}
 
 	fmt.Println(port)
-	serv, err := server.New(port, r)
+	serv, err := server.New(port)
 	if err != nil {
 		fmt.Println(err)
 	}

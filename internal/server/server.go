@@ -1,6 +1,8 @@
 package server
 
 import (
+	"github.com/go-chi/chi"
+	v1 "github.com/goandfootball/test-api/internal/server/v1"
 	"net/http"
 )
 
@@ -8,10 +10,15 @@ type Server struct {
 	server *http.Server
 }
 
-func New(pPort string, pRouter http.Handler) (*Server, error) {
+func New(pPort string) (*Server, error) {
+	r := chi.NewRouter()
+
+	//r.Mount("/api/v1", v1.New())
+	r.Mount("/", v1.New())
+
 	srv := &http.Server{
 		Addr:    ":" + pPort,
-		Handler: pRouter,
+		Handler: r,
 	}
 
 	server := Server{
@@ -26,7 +33,7 @@ func (srv *Server) Close() error {
 	return nil
 }
 
-func (srv *Server) Start() error{
+func (srv *Server) Start() error {
 	err := srv.server.ListenAndServe()
 
 	if err != nil {
