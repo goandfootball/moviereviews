@@ -2,11 +2,21 @@ package data
 
 import (
 	"context"
+	"errors"
 	"github.com/goandfootball/test-api/pkg/user"
 )
 
 type UserRepository struct {
 	Data *Data
+}
+
+func (ud *UserRepository) userExists(ctx context.Context, model user.User) bool {
+	count := ud.Data.Db.WithContext(ctx).Select(&model).RowsAffected
+	if count == 0 {
+		return false
+	}
+
+	return true
 }
 
 func (ud *UserRepository) SelectAllUsers(ctx context.Context) ([]user.User, error) {
@@ -42,29 +52,45 @@ func (ud *UserRepository) SelectUserByUsername(ctx context.Context, where user.U
 }
 
 func (ud *UserRepository) InsertUser(ctx context.Context, new *user.User) error {
-	err := ud.Data.Db.WithContext(ctx).Create(&new).Error
-	if err != nil {
-		return err
+	var errBef, errCre error
+
+	errBef = new.BeforeInsert(ud.Data.Db)
+	if errBef != nil {
+		return errBef
+	}
+
+	errCre = ud.Data.Db.WithContext(ctx).Create(&new).Error
+	if errCre != nil {
+		return errCre
 	}
 
 	return nil
 }
 
 func (ud *UserRepository) UpdateUser(ctx context.Context, model *user.User, updates *user.User) (user.User, error) {
-	// 202010312333 TODO: update is not working
-	err := ud.Data.Db.WithContext(ctx).Where(&model).UpdateColumns(&updates).Error
-	if err != nil {
-		return user.User{}, err
+	var errBef, errUpd error
+
+	errBef = updates.BeforeUpdate(ud.Data.Db)
+	if errBef != nil {
+		return user.User{}, errBef
+	}
+
+	errUpd = ud.Data.Db.WithContext(ctx).Model(&model).Updates(&updates).Error
+	if errUpd != nil {
+		return user.User{}, errUpd
 	}
 	return user.User{}, nil
 }
 
-func (ud *UserRepository) DeleteUserByUsrId(ctx context.Context, where user.User) error {
-	var model user.User
-	// 202030102315 TODO: when user id not exists return ok 200, fix...
-	err := ud.Data.Db.WithContext(ctx).Delete(model, &where)
+func (ud *UserRepository) DeleteUserByUsrId(ctx context.Context, delete user.User) error {
+	exists := ud.userExists(ctx, delete)
+	if exists == false {
+		return errors.New("user doesn't exist")
+	}
+
+	err := ud.Data.Db.WithContext(ctx).Delete(&delete).Error
 	if err != nil {
-		return err.Error
+		return err
 	}
 
 	return nil

@@ -9,8 +9,5 @@ type Repository interface {
 	SelectUserByUsername(ctx context.Context, where User) (User, error)
 	InsertUser(ctx context.Context, new *User) error
 	UpdateUser(ctx context.Context, model *User, updates *User) (User, error)
-	DeleteUserByUsrId(ctx context.Context, where User) error
-	/*
-		Update(ctx context.Context, id uint, usr User) error
-	*/
+	DeleteUserByUsrId(ctx context.Context, delete User) error
 }

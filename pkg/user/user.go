@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"gorm.io/gorm"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -16,7 +17,7 @@ type User struct {
 	Password     string    `json:"usr_password,omitempty" gorm:"column:usr_password;not null"`
 	Picture      string    `json:"usr_picture,omitempty" gorm:"column:usr_picture"`
 	PasswordHash string    `json:"-" gorm:"-"`
-	CreatedAt    time.Time `json:"usr_created_at,omitempty" gorm:"column:usr_created_at;not null"`
+	CreatedAt    time.Time `json:"usr_created_at,omitempty" gorm:"column:usr_created_at;<-:create;not null"`
 	UpdatedAt    time.Time `json:"usr_updated_at,omitempty" gorm:"column:usr_updated_at"`
 }
 
@@ -40,7 +41,7 @@ func (usr User) PasswordMatch(password string) bool {
 	return true
 }
 
-func (usr *User) BeforeInsert() error {
+func (usr User) BeforeInsert(tx *gorm.DB) error {
 	if usr.UsrId != 0 {
 		return errors.New("id is generated automatically in database")
 	}
@@ -70,8 +71,7 @@ func (usr *User) BeforeInsert() error {
 	return nil
 }
 
-func (usr *User) BeforeUpdate() error {
-	// 202010311214 TODO: add validations
+func (usr User) BeforeUpdate(tx *gorm.DB) error {
 	usr.UpdatedAt = time.Now()
 
 	return nil

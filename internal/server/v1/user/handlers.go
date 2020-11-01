@@ -77,12 +77,13 @@ func (ur *URouter) PostUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	errBef := new.BeforeInsert()
-	if errBef != nil {
-		responses.ERROR(w, http.StatusBadRequest, errBef)
-		return
-	}
-
+	/*
+		errBef := new.BeforeInsert()
+		if errBef != nil {
+			responses.ERROR(w, http.StatusBadRequest, errBef)
+			return
+		}
+	*/
 	errIns := ur.Repository.InsertUser(ctx, &new)
 	if errIns != nil {
 		responses.ERROR(w, http.StatusBadRequest, errIns)
@@ -112,11 +113,12 @@ func (ur *URouter) PutUser(w http.ResponseWriter, r *http.Request) {
 	if errDec != nil {
 		responses.ERROR(w, http.StatusBadRequest, errDec)
 	}
-
-	errBef := updates.BeforeUpdate()
-	if errBef != nil {
-		responses.ERROR(w, http.StatusBadRequest, errDec)
-	}
+	/*
+		errBef := updates.BeforeUpdate()
+		if errBef != nil {
+			responses.ERROR(w, http.StatusBadRequest, errDec)
+		}
+	*/
 
 	_, errUpd := ur.Repository.UpdateUser(ctx, &model, &updates)
 	if errUpd != nil {
@@ -128,23 +130,24 @@ func (ur *URouter) PutUser(w http.ResponseWriter, r *http.Request) {
 
 func (ur *URouter) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	var (
-		ctx        context.Context
 		paramValue string
 		where      user.User
 		errStr     error
-		errDel     error
 	)
 
-	ctx = r.Context()
+	ctx := r.Context()
+
 	paramValue = chi.URLParam(r, "id")
 	where.UsrId, errStr = strconv.Atoi(paramValue)
 	if errStr != nil {
 		responses.ERROR(w, http.StatusBadRequest, errStr)
+		return
 	}
 
-	errDel = ur.Repository.DeleteUserByUsrId(ctx, where)
+	errDel := ur.Repository.DeleteUserByUsrId(ctx, where)
 	if errDel != nil {
 		responses.ERROR(w, http.StatusNotModified, errDel)
+		return
 	}
 
 	responses.JSON(w, http.StatusOK, nil)
