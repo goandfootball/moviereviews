@@ -8,11 +8,11 @@ import (
 )
 
 type User struct {
-	UsrId        int       `json:"usr_id,omitempty" gorm:"column:usr_id"`
+	UsrId        int       `json:"usr_id,omitempty" gorm:"column:usr_id;primary_key"`
 	FirstName    string    `json:"usr_first_name,omitempty" gorm:"column:usr_first_name"`
 	LastName     string    `json:"usr_last_name,omitempty" gorm:"column:usr_last_name"`
-	Username     string    `json:"usr_username,omitempty" gorm:"column:usr_username"`
-	Email        string    `json:"usr_email,omitempty" gorm:"column:usr_email"`
+	Username     string    `json:"usr_username,omitempty" gorm:"column:usr_username;unique"`
+	Email        string    `json:"usr_email,omitempty" gorm:"column:usr_email;unique"`
 	Password     string    `json:"usr_password,omitempty" gorm:"column:usr_password"`
 	Picture      string    `json:"usr_picture,omitempty" gorm:"column:usr_picture"`
 	PasswordHash string    `json:"-" gorm:"-"`

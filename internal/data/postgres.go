@@ -64,21 +64,22 @@ func dbMigration(db *gorm.DB) error {
 	if errUsersTable != nil {
 		return errUsersTable
 	}
-	envDummyData, errDummy := configs.GetEnv("TEST_USERS_DUMMY_DATA")
-	if errDummy != nil {
-		return errDummy
-	}
-
+	/*
+		envDummyData, errDummy := configs.GetEnv("TEST_USERS_DUMMY_DATA")
+		if errDummy != nil {
+			return errDummy
+		}
+	*/
 	bUsersTable, errReadUsers := ioutil.ReadFile(envUsersTable)
 	if errReadUsers != nil {
 		return errReadUsers
 	}
-
-	bDummyData, errReadDummy := ioutil.ReadFile(envDummyData)
-	if errReadDummy != nil {
-		return errReadDummy
-	}
-
+	/*
+		bDummyData, errReadDummy := ioutil.ReadFile(envDummyData)
+		if errReadDummy != nil {
+			return errReadDummy
+		}
+	*/
 	sqlDb, errDB := db.DB()
 	if errDB != nil {
 		return errDB
@@ -88,19 +89,23 @@ func dbMigration(db *gorm.DB) error {
 	if errQueryUsers != nil {
 		return errQueryUsers
 	}
-	rowsDummyDat, errQueryDummy := sqlDb.Query(string(bDummyData))
-	if errQueryDummy != nil {
-		return errQueryDummy
-	}
-
+	/*
+		rowsDummyDat, errQueryDummy := sqlDb.Query(string(bDummyData))
+		if errQueryDummy != nil {
+			return errQueryDummy
+		}
+	*/
 	errCloUsers := rowsUsrTab.Close()
+
 	if errCloUsers != nil {
 		return errCloUsers
 	}
-	errCloDummy := rowsDummyDat.Close()
-	if errCloDummy != nil {
-		return errCloDummy
-	}
+	/*
+		errCloDummy := rowsDummyDat.Close()
+		if errCloDummy != nil {
+			return errCloDummy
+		}
+	*/
 
 	return nil
 }
