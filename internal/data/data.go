@@ -33,7 +33,7 @@ func initDb() {
 	if migration == "true" {
 		errMig := dbMigration(db)
 		if errMig != nil {
-			fmt.Println("error on migration database")
+			fmt.Println(errMig)
 		}
 	}
 

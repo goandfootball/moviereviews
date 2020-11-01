@@ -22,12 +22,7 @@ func getConnection() (*gorm.DB, error) {
 
 		err error
 	)
-	/*
-		dialect, err = configs.GetEnv("POSTGRES_DIALECT")
-		if err != nil {
-			fmt.Println(err)
-		}
-	*/
+
 	host, err = configs.GetEnv("POSTGRES_HOST")
 	if err != nil {
 		fmt.Println(err)
@@ -52,15 +47,8 @@ func getConnection() (*gorm.DB, error) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	/*
-		timeZone, err = configs.GetEnv("TIMEZONE")
-		if err != nil {
-			fmt.Println(err)
-		}
-	*/
 
 	dsn := fmt.Sprintf("host=%v port=%v user=%v dbname=%v password=%v sslmode=%v", host, port, user, dbName, password, sslMode)
-	fmt.Println(dsn)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -71,20 +59,48 @@ func getConnection() (*gorm.DB, error) {
 }
 
 func dbMigration(db *gorm.DB) error {
-	// 202010310222 TODO: change hardcoded path for environment variable
-	b, err := ioutil.ReadFile("./database/models.sql")
-	if err != nil {
-		return err
+	// 202010312232 TODO: fix migration error
+	envUsersTable, errUsersTable := configs.GetEnv("TEST_USERS_TABLE_PATH")
+	if errUsersTable != nil {
+		return errUsersTable
+	}
+	envDummyData, errDummy := configs.GetEnv("TEST_USERS_DUMMY_DATA")
+	if errDummy != nil {
+		return errDummy
+	}
+
+	bUsersTable, errReadUsers := ioutil.ReadFile(envUsersTable)
+	if errReadUsers != nil {
+		return errReadUsers
+	}
+
+	bDummyData, errReadDummy := ioutil.ReadFile(envDummyData)
+	if errReadDummy != nil {
+		return errReadDummy
 	}
 
 	sqlDb, errDB := db.DB()
 	if errDB != nil {
 		return errDB
 	}
-	rows, errQuery := sqlDb.Query(string(b))
-	if errQuery != nil {
-		return errQuery
+
+	rowsUsrTab, errQueryUsers := sqlDb.Query(string(bUsersTable))
+	if errQueryUsers != nil {
+		return errQueryUsers
+	}
+	rowsDummyDat, errQueryDummy := sqlDb.Query(string(bDummyData))
+	if errQueryDummy != nil {
+		return errQueryDummy
 	}
 
-	return rows.Close()
+	errCloUsers := rowsUsrTab.Close()
+	if errCloUsers != nil {
+		return errCloUsers
+	}
+	errCloDummy := rowsDummyDat.Close()
+	if errCloDummy != nil {
+		return errCloDummy
+	}
+
+	return nil
 }

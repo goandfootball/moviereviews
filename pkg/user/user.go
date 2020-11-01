@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -14,7 +15,7 @@ type User struct {
 	Email        string    `json:"usr_email,omitempty" gorm:"column:usr_email"`
 	Password     string    `json:"usr_password,omitempty" gorm:"column:usr_password"`
 	Picture      string    `json:"usr_picture,omitempty" gorm:"column:usr_picture"`
-	PasswordHash string    `json:"-"`
+	PasswordHash string    `json:"-" gorm:"-"`
 	CreatedAt    time.Time `json:"usr_created_at,omitempty" gorm:"column:usr_created_at"`
 	UpdatedAt    time.Time `json:"usr_updated_at,omitempty" gorm:"column:usr_updated_at"`
 }
@@ -39,24 +40,23 @@ func (usr User) PasswordMatch(password string) bool {
 	return true
 }
 
-/*
 func (usr *User) BeforeInsert() error {
 	if usr.UsrId != 0 {
-		return errors.New("id is required")
+		return errors.New("id is generated automatically in database")
 	}
-	if usr.FirstName != "" {
+	if usr.FirstName == "" {
 		return errors.New("first name is required")
 	}
-	if usr.LastName != "" {
+	if usr.LastName == "" {
 		return errors.New("last name is required")
 	}
-	if usr.Username != "" {
+	if usr.Username == "" {
 		return errors.New("username name is required")
 	}
-	if usr.Email != "" {
+	if usr.Email == "" {
 		return errors.New("email is required")
 	}
-	if usr.Password != "" {
+	if usr.Password == "" {
 		return errors.New("password is required")
 	}
 
@@ -64,14 +64,15 @@ func (usr *User) BeforeInsert() error {
 	if err != nil {
 		return err
 	}
+	usr.Password = usr.PasswordHash
 	usr.CreatedAt = time.Now()
 
 	return nil
 }
 
 func (usr *User) BeforeUpdate() error {
+	// 202010311214 TODO: add validations
 	usr.UpdatedAt = time.Now()
 
 	return nil
 }
-*/

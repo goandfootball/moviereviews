@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/go-chi/chi"
 	"github.com/goandfootball/test-api/pkg/responses"
 	"github.com/goandfootball/test-api/pkg/user"
@@ -63,6 +64,63 @@ func (ur *URouter) GetByUsername(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, result)
+}
+
+func (ur *URouter) PostUser(w http.ResponseWriter, r *http.Request) {
+	var new user.User
+
+	ctx := r.Context()
+
+	errDec := json.NewDecoder(r.Body).Decode(&new)
+	if errDec != nil {
+		responses.ERROR(w, http.StatusBadRequest, errDec)
+	}
+
+	errBef := new.BeforeInsert()
+	if errBef != nil {
+		responses.ERROR(w, http.StatusBadRequest, errBef)
+	}
+
+	errIns := ur.Repository.InsertUser(ctx, &new)
+	if errIns != nil {
+		responses.ERROR(w, http.StatusBadRequest, errIns)
+	}
+
+	responses.JSON(w, http.StatusCreated, nil)
+}
+
+func (ur *URouter) PutUser(w http.ResponseWriter, r *http.Request) {
+	var (
+		paramValue     string
+		model, updates user.User
+
+		errStr error
+	)
+
+	ctx := r.Context()
+
+	paramValue = chi.URLParam(r, "id")
+	model.UsrId, errStr = strconv.Atoi(paramValue)
+	if errStr != nil {
+		responses.ERROR(w, http.StatusBadRequest, errStr)
+	}
+
+	errDec := json.NewDecoder(r.Body).Decode(&updates)
+	if errDec != nil {
+		responses.ERROR(w, http.StatusBadRequest, errDec)
+	}
+
+	errBef := updates.BeforeUpdate()
+	if errBef != nil {
+		responses.ERROR(w, http.StatusBadRequest, errDec)
+	}
+
+	_, errUpd := ur.Repository.UpdateUser(ctx, &model, &updates)
+	if errUpd != nil {
+		responses.ERROR(w, http.StatusNotModified, errDec)
+	}
+
+	responses.JSON(w, http.StatusOK, nil)
 }
 
 func (ur *URouter) DeleteUser(w http.ResponseWriter, r *http.Request) {

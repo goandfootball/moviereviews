@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"github.com/goandfootball/test-api/pkg/user"
 )
 
@@ -39,6 +40,25 @@ func (ud *UserRepository) SelectUserByUsername(ctx context.Context, where user.U
 	}
 
 	return result, nil
+}
+
+func (ud *UserRepository) InsertUser(ctx context.Context, new *user.User) error {
+	// 202010311024 TODO: user is not inserted but return ok
+	fmt.Println(new)
+	err := ud.Data.Db.WithContext(ctx).Create(&new).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ud *UserRepository) UpdateUser(ctx context.Context, model *user.User, updates *user.User) (user.User, error) {
+	err := ud.Data.Db.WithContext(ctx).Where(&model).UpdateColumns(&updates).Error
+	if err != nil {
+		return user.User{}, err
+	}
+	return user.User{}, nil
 }
 
 func (ud *UserRepository) DeleteUserByUsrId(ctx context.Context, where user.User) error {

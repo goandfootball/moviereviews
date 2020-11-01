@@ -2,42 +2,18 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-
 	"github.com/goandfootball/test-api/configs"
 	"github.com/goandfootball/test-api/internal/data"
 	"github.com/goandfootball/test-api/internal/server"
+	"log"
 )
 
-// Welcome handler
-func Welcome(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprintf(w, "Hello, world!")
-	if err != nil {
-		fmt.Println("error trying to print greet")
-	}
-}
-
 func main() {
-	/*
-		err := godotenv.Load(os.ExpandEnv("C:/workspaces/Go/src/github.com/goandfootball/test-api/.env.development.local"))
-		if err != nil {
-			fmt.Println(err)
-		}
-	*/
-
-	// new router
-	//r := mux.NewRouter()
-	// Routers consist of a path and a handler function
-	// Welcome path
-	//r.HandleFunc("/", Welcome).Methods("GET")
-
-	port, err := configs.GetEnv("SERVER_PORT") //os.LookupEnv("PORT")
+	port, err := configs.GetEnv("SERVER_PORT")
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(port)
 	serv, err := server.New(port)
 	if err != nil {
 		fmt.Println(err)
@@ -52,12 +28,7 @@ func main() {
 	if err := sqlDB.Ping(); err != nil {
 		log.Fatal(err)
 	}
-	/*
-		if err := d.Db.Ping(); err != nil {
-			log.Fatal(err)
-		}
-	*/
-	// start the server.
+
 	err = serv.Start()
 	if err != nil {
 		fmt.Println(err)
