@@ -74,16 +74,19 @@ func (ur *URouter) PostUser(w http.ResponseWriter, r *http.Request) {
 	errDec := json.NewDecoder(r.Body).Decode(&new)
 	if errDec != nil {
 		responses.ERROR(w, http.StatusBadRequest, errDec)
+		return
 	}
 
 	errBef := new.BeforeInsert()
 	if errBef != nil {
 		responses.ERROR(w, http.StatusBadRequest, errBef)
+		return
 	}
 
 	errIns := ur.Repository.InsertUser(ctx, &new)
 	if errIns != nil {
 		responses.ERROR(w, http.StatusBadRequest, errIns)
+		return
 	}
 
 	responses.JSON(w, http.StatusCreated, nil)

@@ -9,14 +9,14 @@ import (
 
 type User struct {
 	UsrId        int       `json:"usr_id,omitempty" gorm:"column:usr_id;primary_key"`
-	FirstName    string    `json:"usr_first_name,omitempty" gorm:"column:usr_first_name"`
-	LastName     string    `json:"usr_last_name,omitempty" gorm:"column:usr_last_name"`
+	FirstName    string    `json:"usr_first_name,omitempty" gorm:"column:usr_first_name;not null"`
+	LastName     string    `json:"usr_last_name,omitempty" gorm:"column:usr_last_name;not null"`
 	Username     string    `json:"usr_username,omitempty" gorm:"column:usr_username;unique"`
 	Email        string    `json:"usr_email,omitempty" gorm:"column:usr_email;unique"`
-	Password     string    `json:"usr_password,omitempty" gorm:"column:usr_password"`
+	Password     string    `json:"usr_password,omitempty" gorm:"column:usr_password;not null"`
 	Picture      string    `json:"usr_picture,omitempty" gorm:"column:usr_picture"`
 	PasswordHash string    `json:"-" gorm:"-"`
-	CreatedAt    time.Time `json:"usr_created_at,omitempty" gorm:"column:usr_created_at"`
+	CreatedAt    time.Time `json:"usr_created_at,omitempty" gorm:"column:usr_created_at;not null"`
 	UpdatedAt    time.Time `json:"usr_updated_at,omitempty" gorm:"column:usr_updated_at"`
 }
 

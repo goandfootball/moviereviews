@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS users (
     usr_id          serial              NOT NULL,
-    usr_first_name  VARCHAR(50),
-    usr_last_name   VARCHAR(50),
+    usr_first_name  VARCHAR(50)         NOT NULL,
+    usr_last_name   VARCHAR(50)         NOT NULL,
     usr_username    VARCHAR(50)         UNIQUE,
     usr_email       VARCHAR(50)         UNIQUE,
     usr_password    VARCHAR(256)        NOT NULL,
