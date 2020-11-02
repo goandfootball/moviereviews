@@ -7,7 +7,7 @@ import (
 )
 
 type Review struct {
-	Id        int       `json:"rev_id,omitempty" gorm:"column:rev_id;primary_key"`
+	Id        int       `json:"rev_id,omitempty" gorm:"column:rev_id;primary_key;<-:false"`
 	MovId     int       `json:"mov_id,omitempty" gorm:"column:mov_id;not null"`
 	UsrId     uint      `json:"usr_id,omitempty" gorm:"column:usr_id;not null"`
 	Star      int       `json:"rev_star,omitempty" gorm:"column:rev_star;not null"`

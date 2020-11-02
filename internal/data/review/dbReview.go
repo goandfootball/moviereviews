@@ -13,7 +13,8 @@ type DbReview struct {
 
 // 202011011439 TODO: validate pointers usage on gorm
 func (dr *DbReview) reviewExists(ctx context.Context, review *review.Review) bool {
-	count := dr.Data.Db.WithContext(ctx).Select(&review).RowsAffected
+	count := dr.Data.Db.WithContext(ctx).Find(&review).RowsAffected
+
 	if count == 0 {
 		return false
 	}
@@ -35,7 +36,7 @@ func (dr *DbReview) SelectAllReviews(ctx context.Context) ([]review.Review, erro
 func (dr *DbReview) SelectReviewByRevId(ctx context.Context, cond review.Review) (review.Review, error) {
 	var dest review.Review
 
-	err := dr.Data.Db.WithContext(ctx).First(&dest, cond).Error
+	err := dr.Data.Db.WithContext(ctx).Find(&dest, cond).Error
 	if err != nil {
 		return review.Review{}, err
 	}
@@ -80,6 +81,11 @@ func (dr *DbReview) InsertReview(ctx context.Context, create *review.Review) err
 }
 
 func (dr *DbReview) UpdateReview(ctx context.Context, model *review.Review, updates *review.Review) error {
+	exists := dr.reviewExists(ctx, model)
+	if exists == false {
+		return errors.New("review doesn't exists")
+	}
+
 	errBef := updates.BeforeUpdate(dr.Data.Db)
 	if errBef != nil {
 		return errBef

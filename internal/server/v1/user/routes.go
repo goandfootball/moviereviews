@@ -9,7 +9,7 @@ func (ur *UsrRouter) UserRouter() http.Handler {
 	r := chi.NewRouter()
 
 	r.Get("/", ur.GetAll)
-	r.Get("/id/{id}", ur.GetByUsrId)
+	r.Get("/{id}", ur.GetByUsrId)
 	r.Get("/username/{username}", ur.GetByUsername)
 	r.Post("/", ur.PostUser)
 	r.Put("/{id}", ur.PutUser)
