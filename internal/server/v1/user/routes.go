@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (ur *URouter) UPaths() http.Handler {
+func (ur *UsrRouter) UserRouter() http.Handler {
 	r := chi.NewRouter()
 
 	r.Get("/", ur.GetAll)

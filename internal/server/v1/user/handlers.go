@@ -10,11 +10,11 @@ import (
 	"strconv"
 )
 
-type URouter struct {
+type UsrRouter struct {
 	Repository user.Repository
 }
 
-func (ur *URouter) GetAll(w http.ResponseWriter, r *http.Request) {
+func (ur *UsrRouter) GetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	// 202010301943 TODO: search for http errors guide
 	result, err := ur.Repository.SelectAllUsers(ctx)
@@ -25,7 +25,7 @@ func (ur *URouter) GetAll(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, result)
 }
 
-func (ur *URouter) GetByUsrId(w http.ResponseWriter, r *http.Request) {
+func (ur *UsrRouter) GetByUsrId(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx        context.Context
 		paramValue string
@@ -49,7 +49,7 @@ func (ur *URouter) GetByUsrId(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, result)
 }
 
-func (ur *URouter) GetByUsername(w http.ResponseWriter, r *http.Request) {
+func (ur *UsrRouter) GetByUsername(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx   context.Context
 		where user.User
@@ -66,7 +66,7 @@ func (ur *URouter) GetByUsername(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, result)
 }
 
-func (ur *URouter) PostUser(w http.ResponseWriter, r *http.Request) {
+func (ur *UsrRouter) PostUser(w http.ResponseWriter, r *http.Request) {
 	var newUser user.User
 
 	ctx := r.Context()
@@ -86,7 +86,7 @@ func (ur *URouter) PostUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, nil)
 }
 
-func (ur *URouter) PutUser(w http.ResponseWriter, r *http.Request) {
+func (ur *UsrRouter) PutUser(w http.ResponseWriter, r *http.Request) {
 	var (
 		paramValue     string
 		model, updates user.User
@@ -121,7 +121,7 @@ func (ur *URouter) PutUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, nil)
 }
 
-func (ur *URouter) DeleteUser(w http.ResponseWriter, r *http.Request) {
+func (ur *UsrRouter) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	var (
 		paramValue string
 		where      user.User
