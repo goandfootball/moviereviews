@@ -67,24 +67,17 @@ func (ur *URouter) GetByUsername(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ur *URouter) PostUser(w http.ResponseWriter, r *http.Request) {
-	var new user.User
+	var newUser user.User
 
 	ctx := r.Context()
 
-	errDec := json.NewDecoder(r.Body).Decode(&new)
+	errDec := json.NewDecoder(r.Body).Decode(&newUser)
 	if errDec != nil {
 		responses.ERROR(w, http.StatusBadRequest, errDec)
 		return
 	}
 
-	/*
-		errBef := new.BeforeInsert()
-		if errBef != nil {
-			responses.ERROR(w, http.StatusBadRequest, errBef)
-			return
-		}
-	*/
-	errIns := ur.Repository.InsertUser(ctx, &new)
+	errIns := ur.Repository.InsertUser(ctx, &newUser)
 	if errIns != nil {
 		responses.ERROR(w, http.StatusBadRequest, errIns)
 		return
@@ -120,7 +113,7 @@ func (ur *URouter) PutUser(w http.ResponseWriter, r *http.Request) {
 		}
 	*/
 
-	_, errUpd := ur.Repository.UpdateUser(ctx, &model, &updates)
+	errUpd := ur.Repository.UpdateUser(ctx, &model, &updates)
 	if errUpd != nil {
 		responses.ERROR(w, http.StatusNotModified, errDec)
 	}

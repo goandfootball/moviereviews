@@ -1,16 +1,17 @@
-package data
+package user
 
 import (
 	"context"
 	"errors"
+	"github.com/goandfootball/test-api/internal/data"
 	"github.com/goandfootball/test-api/pkg/user"
 )
 
-type UserRepository struct {
-	Data *Data
+type DbUser struct {
+	Data *data.Data
 }
 
-func (ud *UserRepository) userExists(ctx context.Context, model user.User) bool {
+func (ud *DbUser) userExists(ctx context.Context, model user.User) bool {
 	count := ud.Data.Db.WithContext(ctx).Select(&model).RowsAffected
 	if count == 0 {
 		return false
@@ -19,7 +20,7 @@ func (ud *UserRepository) userExists(ctx context.Context, model user.User) bool 
 	return true
 }
 
-func (ud *UserRepository) SelectAllUsers(ctx context.Context) ([]user.User, error) {
+func (ud *DbUser) SelectAllUsers(ctx context.Context) ([]user.User, error) {
 	var dest []user.User
 
 	err := ud.Data.Db.WithContext(ctx).Find(&dest).Error
@@ -30,7 +31,7 @@ func (ud *UserRepository) SelectAllUsers(ctx context.Context) ([]user.User, erro
 	return dest, nil
 }
 
-func (ud *UserRepository) SelectUserByUsrId(ctx context.Context, where user.User) (user.User, error) {
+func (ud *DbUser) SelectUserByUsrId(ctx context.Context, where user.User) (user.User, error) {
 	var result user.User
 
 	err := ud.Data.Db.WithContext(ctx).First(&result, where).Error
@@ -41,7 +42,7 @@ func (ud *UserRepository) SelectUserByUsrId(ctx context.Context, where user.User
 	return result, nil
 }
 
-func (ud *UserRepository) SelectUserByUsername(ctx context.Context, where user.User) (user.User, error) {
+func (ud *DbUser) SelectUserByUsername(ctx context.Context, where user.User) (user.User, error) {
 	var result user.User
 
 	err := ud.Data.Db.WithContext(ctx).First(&result, where).Error
@@ -52,7 +53,7 @@ func (ud *UserRepository) SelectUserByUsername(ctx context.Context, where user.U
 	return result, nil
 }
 
-func (ud *UserRepository) InsertUser(ctx context.Context, new *user.User) error {
+func (ud *DbUser) InsertUser(ctx context.Context, new *user.User) error {
 	var errBef, errCre error
 
 	errBef = new.BeforeInsert(ud.Data.Db)
@@ -68,7 +69,7 @@ func (ud *UserRepository) InsertUser(ctx context.Context, new *user.User) error 
 	return nil
 }
 
-func (ud *UserRepository) UpdateUser(ctx context.Context, model *user.User, updates *user.User) error {
+func (ud *DbUser) UpdateUser(ctx context.Context, model *user.User, updates *user.User) error {
 	errBef := updates.BeforeUpdate(ud.Data.Db)
 	if errBef != nil {
 		return errBef
@@ -81,7 +82,7 @@ func (ud *UserRepository) UpdateUser(ctx context.Context, model *user.User, upda
 	return nil
 }
 
-func (ud *UserRepository) DeleteUserByUsrId(ctx context.Context, delete user.User) error {
+func (ud *DbUser) DeleteUserByUsrId(ctx context.Context, delete user.User) error {
 	exists := ud.userExists(ctx, delete)
 	if exists == false {
 		return errors.New("user doesn't exist")
