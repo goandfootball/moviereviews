@@ -36,7 +36,7 @@ func (ur *URouter) GetByUsrId(w http.ResponseWriter, r *http.Request) {
 	ctx = r.Context()
 	paramValue = chi.URLParam(r, "id")
 
-	where.UsrId, errStr = strconv.Atoi(paramValue)
+	where.Id, errStr = strconv.Atoi(paramValue)
 	if errStr != nil {
 		responses.ERROR(w, http.StatusBadRequest, errStr)
 	}
@@ -104,7 +104,7 @@ func (ur *URouter) PutUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	paramValue = chi.URLParam(r, "id")
-	model.UsrId, errStr = strconv.Atoi(paramValue)
+	model.Id, errStr = strconv.Atoi(paramValue)
 	if errStr != nil {
 		responses.ERROR(w, http.StatusBadRequest, errStr)
 	}
@@ -138,7 +138,7 @@ func (ur *URouter) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	paramValue = chi.URLParam(r, "id")
-	where.UsrId, errStr = strconv.Atoi(paramValue)
+	where.Id, errStr = strconv.Atoi(paramValue)
 	if errStr != nil {
 		responses.ERROR(w, http.StatusBadRequest, errStr)
 		return

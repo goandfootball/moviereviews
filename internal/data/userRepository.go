@@ -20,13 +20,14 @@ func (ud *UserRepository) userExists(ctx context.Context, model user.User) bool 
 }
 
 func (ud *UserRepository) SelectAllUsers(ctx context.Context) ([]user.User, error) {
-	var modelUsers []user.User
+	var dest []user.User
 
-	if err := ud.Data.Db.WithContext(ctx).Find(&modelUsers).Error; err != nil {
+	err := ud.Data.Db.WithContext(ctx).Find(&dest).Error
+	if err != nil {
 		return []user.User{}, nil
 	}
 
-	return modelUsers, nil
+	return dest, nil
 }
 
 func (ud *UserRepository) SelectUserByUsrId(ctx context.Context, where user.User) (user.User, error) {
@@ -67,19 +68,17 @@ func (ud *UserRepository) InsertUser(ctx context.Context, new *user.User) error 
 	return nil
 }
 
-func (ud *UserRepository) UpdateUser(ctx context.Context, model *user.User, updates *user.User) (user.User, error) {
-	var errBef, errUpd error
-
-	errBef = updates.BeforeUpdate(ud.Data.Db)
+func (ud *UserRepository) UpdateUser(ctx context.Context, model *user.User, updates *user.User) error {
+	errBef := updates.BeforeUpdate(ud.Data.Db)
 	if errBef != nil {
-		return user.User{}, errBef
+		return errBef
 	}
 
-	errUpd = ud.Data.Db.WithContext(ctx).Model(&model).Updates(&updates).Error
+	errUpd := ud.Data.Db.WithContext(ctx).Model(&model).Updates(&updates).Error
 	if errUpd != nil {
-		return user.User{}, errUpd
+		return errUpd
 	}
-	return user.User{}, nil
+	return nil
 }
 
 func (ud *UserRepository) DeleteUserByUsrId(ctx context.Context, delete user.User) error {

@@ -9,7 +9,7 @@ import (
 )
 
 type User struct {
-	UsrId        int       `json:"usr_id,omitempty" gorm:"column:usr_id;primary_key"`
+	Id           int       `json:"usr_id,omitempty" gorm:"column:usr_id;primary_key"`
 	FirstName    string    `json:"usr_first_name,omitempty" gorm:"column:usr_first_name;not null"`
 	LastName     string    `json:"usr_last_name,omitempty" gorm:"column:usr_last_name;not null"`
 	Username     string    `json:"usr_username,omitempty" gorm:"column:usr_username;unique"`
@@ -42,7 +42,7 @@ func (usr User) PasswordMatch(password string) bool {
 }
 
 func (usr User) BeforeInsert(tx *gorm.DB) error {
-	if usr.UsrId != 0 {
+	if usr.Id != 0 {
 		return errors.New("id is generated automatically in database")
 	}
 	if usr.FirstName == "" {
