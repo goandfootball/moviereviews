@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/go-chi/chi"
-	"github.com/goandfootball/test-api/pkg/responses"
-	"github.com/goandfootball/test-api/pkg/user"
+	"github.com/goandfootball/moviereviews/pkg/responses"
+	"github.com/goandfootball/moviereviews/pkg/user"
 	"net/http"
 	"strconv"
 )

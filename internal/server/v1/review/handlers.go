@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"encoding/json"
-	"github.com/goandfootball/test-api/pkg/responses"
-	"github.com/goandfootball/test-api/pkg/review"
+	"github.com/goandfootball/moviereviews/pkg/responses"
+	"github.com/goandfootball/moviereviews/pkg/review"
 	"net/http"
 )
 

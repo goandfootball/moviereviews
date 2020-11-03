@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/goandfootball/test-api/configs"
+	"github.com/goandfootball/moviereviews/configs"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

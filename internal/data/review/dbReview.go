@@ -2,8 +2,8 @@ package review
 
 import (
 	"context"
-	"github.com/goandfootball/test-api/internal/data"
-	"github.com/goandfootball/test-api/pkg/review"
+	"github.com/goandfootball/moviereviews/internal/data"
+	"github.com/goandfootball/moviereviews/pkg/review"
 	"github.com/pkg/errors"
 )
 

@@ -2,11 +2,11 @@ package v1
 
 import (
 	"github.com/go-chi/chi"
-	"github.com/goandfootball/test-api/internal/data"
-	review2 "github.com/goandfootball/test-api/internal/data/review"
-	user2 "github.com/goandfootball/test-api/internal/data/user"
-	"github.com/goandfootball/test-api/internal/server/v1/review"
-	"github.com/goandfootball/test-api/internal/server/v1/user"
+	"github.com/goandfootball/moviereviews/internal/data"
+	review2 "github.com/goandfootball/moviereviews/internal/data/review"
+	user2 "github.com/goandfootball/moviereviews/internal/data/user"
+	"github.com/goandfootball/moviereviews/internal/server/v1/review"
+	"github.com/goandfootball/moviereviews/internal/server/v1/user"
 	"net/http"
 )
 

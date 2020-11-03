@@ -3,8 +3,8 @@ package user
 import (
 	"context"
 	"errors"
-	"github.com/goandfootball/test-api/internal/data"
-	"github.com/goandfootball/test-api/pkg/user"
+	"github.com/goandfootball/moviereviews/internal/data"
+	"github.com/goandfootball/moviereviews/pkg/user"
 )
 
 type DbUser struct {

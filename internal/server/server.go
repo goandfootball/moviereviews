@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/go-chi/chi"
-	v1 "github.com/goandfootball/test-api/internal/server/v1"
+	v1 "github.com/goandfootball/moviereviews/internal/server/v1"
 	"net/http"
 )
 

@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/goandfootball/test-api/configs"
-	"github.com/goandfootball/test-api/internal/data"
-	"github.com/goandfootball/test-api/internal/server"
+	"github.com/goandfootball/moviereviews/configs"
+	"github.com/goandfootball/moviereviews/internal/data"
+	"github.com/goandfootball/moviereviews/internal/server"
 	"log"
 )
 

@@ -2,7 +2,7 @@ package data
 
 import (
 	"fmt"
-	"github.com/goandfootball/test-api/configs"
+	"github.com/goandfootball/moviereviews/configs"
 	"log"
 	"sync"
 
