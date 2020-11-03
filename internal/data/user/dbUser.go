@@ -2,17 +2,17 @@ package user
 
 import (
 	"context"
-	"errors"
 	"github.com/goandfootball/moviereviews/internal/data"
 	"github.com/goandfootball/moviereviews/pkg/user"
+	"github.com/pkg/errors"
 )
 
 type DbUser struct {
 	Data *data.Data
 }
 
-func (ud *DbUser) userExists(ctx context.Context, model user.User) bool {
-	count := ud.Data.Db.WithContext(ctx).Select(&model).RowsAffected
+func (ud *DbUser) userExists(ctx context.Context, cond *user.User) bool {
+	count := ud.Data.Db.WithContext(ctx).Find(&cond).RowsAffected
 	if count == 0 {
 		return false
 	}
@@ -56,7 +56,7 @@ func (ud *DbUser) SelectUserByUsername(ctx context.Context, where user.User) (us
 func (ud *DbUser) InsertUser(ctx context.Context, new *user.User) error {
 	var errBef, errCre error
 
-	errBef = new.BeforeInsert(ud.Data.Db)
+	errBef = new.Prepare()
 	if errBef != nil {
 		return errBef
 	}
@@ -83,7 +83,7 @@ func (ud *DbUser) UpdateUser(ctx context.Context, model *user.User, updates *use
 }
 
 func (ud *DbUser) DeleteUserByUsrId(ctx context.Context, delete user.User) error {
-	exists := ud.userExists(ctx, delete)
+	exists := ud.userExists(ctx, &delete)
 	if exists == false {
 		return errors.New("user doesn't exist")
 	}

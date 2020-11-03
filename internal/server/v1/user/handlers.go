@@ -106,12 +106,6 @@ func (ur *UsrRouter) PutUser(w http.ResponseWriter, r *http.Request) {
 	if errDec != nil {
 		responses.ERROR(w, http.StatusBadRequest, errDec)
 	}
-	/*
-		errBef := updates.BeforeUpdate()
-		if errBef != nil {
-			responses.ERROR(w, http.StatusBadRequest, errDec)
-		}
-	*/
 
 	errUpd := ur.Repository.UpdateUser(ctx, &model, &updates)
 	if errUpd != nil {

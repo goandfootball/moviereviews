@@ -9,7 +9,7 @@ import (
 )
 
 type User struct {
-	Id           int       `json:"usr_id,omitempty" gorm:"column:usr_id;primary_key"`
+	Id           int       `json:"usr_id,omitempty" gorm:"column:usr_id;primary_key;<-:false"`
 	FirstName    string    `json:"usr_first_name,omitempty" gorm:"column:usr_first_name;not null"`
 	LastName     string    `json:"usr_last_name,omitempty" gorm:"column:usr_last_name;not null"`
 	Username     string    `json:"usr_username,omitempty" gorm:"column:usr_username;unique"`
@@ -21,15 +21,17 @@ type User struct {
 	UpdatedAt    time.Time `json:"usr_updated_at,omitempty" gorm:"column:usr_updated_at"`
 }
 
-func (usr *User) HashPassword() error {
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(usr.Password), bcrypt.DefaultCost)
+func hash(password string) (string, error) {
+	bytePassword := []byte(password)
+
+	passwordHash, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	usr.PasswordHash = string(passwordHash)
+	result := string(passwordHash)
 
-	return nil
+	return result, nil
 }
 
 func (usr User) PasswordMatch(password string) bool {
@@ -41,7 +43,7 @@ func (usr User) PasswordMatch(password string) bool {
 	return true
 }
 
-func (usr User) BeforeInsert(tx *gorm.DB) error {
+func (usr *User) Prepare() error {
 	if usr.Id != 0 {
 		return errors.New("id is generated automatically in database")
 	}
@@ -61,11 +63,12 @@ func (usr User) BeforeInsert(tx *gorm.DB) error {
 		return errors.New("password is required")
 	}
 
-	err := usr.HashPassword()
+	hashedPassword, err := hash(usr.Password)
 	if err != nil {
 		return err
 	}
-	usr.Password = usr.PasswordHash
+
+	usr.Password = hashedPassword
 	usr.CreatedAt = time.Now()
 
 	return nil
