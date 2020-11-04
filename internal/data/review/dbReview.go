@@ -11,7 +11,6 @@ type DbReview struct {
 	Data *data.Data
 }
 
-// 202011011439 TODO: validate pointers usage on gorm
 func (dr *DbReview) reviewExists(ctx context.Context, review *review.Review) bool {
 	count := dr.Data.Db.WithContext(ctx).Find(&review).RowsAffected
 
@@ -23,20 +22,20 @@ func (dr *DbReview) reviewExists(ctx context.Context, review *review.Review) boo
 }
 
 func (dr *DbReview) SelectAllReviews(ctx context.Context) ([]review.Review, error) {
-	var reviews []review.Review
+	var dest []review.Review
 
-	err := dr.Data.Db.WithContext(ctx).Find(&reviews).Error
+	err := dr.Data.Db.WithContext(ctx).Find(&dest).Error
 	if err != nil {
 		return []review.Review{}, err
 	}
 
-	return reviews, nil
+	return dest, nil
 }
 
-func (dr *DbReview) SelectReviewByRevId(ctx context.Context, cond review.Review) (review.Review, error) {
+func (dr *DbReview) SelectReviewByRevId(ctx context.Context, cond *review.Review) (review.Review, error) {
 	var dest review.Review
 
-	err := dr.Data.Db.WithContext(ctx).Find(&dest, cond).Error
+	err := dr.Data.Db.WithContext(ctx).First(&dest, &cond).Error
 	if err != nil {
 		return review.Review{}, err
 	}
@@ -44,10 +43,10 @@ func (dr *DbReview) SelectReviewByRevId(ctx context.Context, cond review.Review)
 	return dest, nil
 }
 
-func (dr *DbReview) SelectReviewsByMovId(ctx context.Context, cond review.Review) ([]review.Review, error) {
+func (dr *DbReview) SelectReviewsByMovId(ctx context.Context, cond *review.Review) ([]review.Review, error) {
 	var dest []review.Review
 
-	err := dr.Data.Db.WithContext(ctx).Find(&dest, cond).Error
+	err := dr.Data.Db.WithContext(ctx).Find(&dest, &cond).Error
 	if err != nil {
 		return []review.Review{}, err
 	}
@@ -55,10 +54,10 @@ func (dr *DbReview) SelectReviewsByMovId(ctx context.Context, cond review.Review
 	return dest, nil
 }
 
-func (dr *DbReview) SelectReviewsByUsrId(ctx context.Context, cond review.Review) ([]review.Review, error) {
+func (dr *DbReview) SelectReviewsByUsrId(ctx context.Context, cond *review.Review) ([]review.Review, error) {
 	var dest []review.Review
 
-	err := dr.Data.Db.WithContext(ctx).Find(&dest, cond).Error
+	err := dr.Data.Db.WithContext(ctx).Find(&dest, &cond).Error
 	if err != nil {
 		return []review.Review{}, err
 	}
@@ -66,13 +65,13 @@ func (dr *DbReview) SelectReviewsByUsrId(ctx context.Context, cond review.Review
 	return dest, nil
 }
 
-func (dr *DbReview) InsertReview(ctx context.Context, create *review.Review) error {
-	errBef := create.BeforeInsert(dr.Data.Db)
+func (dr *DbReview) InsertReview(ctx context.Context, value *review.Review) error {
+	errBef := value.BeforeInsert(dr.Data.Db)
 	if errBef != nil {
 		return errBef
 	}
 
-	err := dr.Data.Db.WithContext(ctx).Create(&create).Error
+	err := dr.Data.Db.WithContext(ctx).Create(&value).Error
 	if err != nil {
 		return err
 	}
@@ -99,8 +98,8 @@ func (dr *DbReview) UpdateReview(ctx context.Context, model *review.Review, upda
 	return nil
 }
 
-func (dr *DbReview) DeleteReviewByRevId(ctx context.Context, delete review.Review) error {
-	exists := dr.reviewExists(ctx, &delete)
+func (dr *DbReview) DeleteReviewByRevId(ctx context.Context, delete *review.Review) error {
+	exists := dr.reviewExists(ctx, delete)
 	if exists == false {
 		return errors.New("review doesn't exists")
 	}

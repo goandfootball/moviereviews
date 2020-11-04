@@ -11,8 +11,10 @@ type DbUser struct {
 	Data *data.Data
 }
 
+// 202011032224 TODO: validate gorm pointers
 func (ud *DbUser) userExists(ctx context.Context, cond *user.User) bool {
 	count := ud.Data.Db.WithContext(ctx).Find(&cond).RowsAffected
+
 	if count == 0 {
 		return false
 	}
@@ -31,10 +33,15 @@ func (ud *DbUser) SelectAllUsers(ctx context.Context) ([]user.User, error) {
 	return dest, nil
 }
 
-func (ud *DbUser) SelectUserByUsrId(ctx context.Context, where user.User) (user.User, error) {
+func (ud *DbUser) SelectUserByUsrId(ctx context.Context, cond *user.User) (user.User, error) {
 	var result user.User
 
-	err := ud.Data.Db.WithContext(ctx).First(&result, where).Error
+	exists := ud.userExists(ctx, cond)
+	if exists == false {
+		return user.User{}, errors.New("user doesn't exist")
+	}
+
+	err := ud.Data.Db.WithContext(ctx).Find(&result, cond).Error
 	if err != nil {
 		return user.User{}, err
 	}
@@ -42,26 +49,28 @@ func (ud *DbUser) SelectUserByUsrId(ctx context.Context, where user.User) (user.
 	return result, nil
 }
 
-func (ud *DbUser) SelectUserByUsername(ctx context.Context, where user.User) (user.User, error) {
+func (ud *DbUser) SelectUserByUsername(ctx context.Context, cond *user.User) (user.User, error) {
 	var result user.User
 
-	err := ud.Data.Db.WithContext(ctx).First(&result, where).Error
-	if err != nil {
-		return user.User{}, err
+	err := ud.Data.Db.WithContext(ctx).Find(&result, cond)
+	if err.RowsAffected == 0 {
+		return user.User{}, errors.New("User doesn't exist")
 	}
-
+	if err.Error != nil {
+		return user.User{}, err.Error
+	}
 	return result, nil
 }
 
-func (ud *DbUser) InsertUser(ctx context.Context, new *user.User) error {
+func (ud *DbUser) InsertUser(ctx context.Context, value *user.User) error {
 	var errBef, errCre error
 
-	errBef = new.Prepare()
+	errBef = value.Prepare()
 	if errBef != nil {
 		return errBef
 	}
 
-	errCre = ud.Data.Db.WithContext(ctx).Create(&new).Error
+	errCre = ud.Data.Db.WithContext(ctx).Create(&value).Error
 	if errCre != nil {
 		return errCre
 	}
@@ -75,6 +84,11 @@ func (ud *DbUser) UpdateUser(ctx context.Context, model *user.User, updates *use
 		return errBef
 	}
 
+	exists := ud.userExists(ctx, model)
+	if exists == false {
+		return errors.New("user doesn't exist")
+	}
+
 	errUpd := ud.Data.Db.WithContext(ctx).Model(&model).Updates(&updates).Error
 	if errUpd != nil {
 		return errUpd
@@ -82,8 +96,8 @@ func (ud *DbUser) UpdateUser(ctx context.Context, model *user.User, updates *use
 	return nil
 }
 
-func (ud *DbUser) DeleteUserByUsrId(ctx context.Context, delete user.User) error {
-	exists := ud.userExists(ctx, &delete)
+func (ud *DbUser) DeleteUserByUsrId(ctx context.Context, delete *user.User) error {
+	exists := ud.userExists(ctx, delete)
 	if exists == false {
 		return errors.New("user doesn't exist")
 	}

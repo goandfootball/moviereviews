@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"encoding/json"
-	"github.com/goandfootball/moviereviews/pkg/responses"
 	"github.com/goandfootball/moviereviews/pkg/review"
 	"net/http"
 )
@@ -15,9 +14,11 @@ type RevRouter struct {
 }
 
 const (
-	constRevId string = "id"
-	constMovId string = "id"
-	constUsrId string = "id"
+	paramRevId      string = "id"
+	paramMovId      string = "id"
+	paramUsrId      string = "id"
+	headerKey              = "content-type"
+	contentTypeJSON        = "application/json"
 )
 
 func (rr *RevRouter) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -25,11 +26,17 @@ func (rr *RevRouter) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	result, errSel := rr.Repository.SelectAllReviews(ctx)
 	if errSel != nil {
-		responses.ERROR(w, http.StatusBadRequest, errSel)
+		http.Error(w, errSel.Error(), http.StatusBadRequest)
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, result)
+	w.Header().Set(headerKey, contentTypeJSON)
+	w.WriteHeader(http.StatusOK)
+	errEnc := json.NewEncoder(w).Encode(&result)
+	if errEnc != nil {
+		http.Error(w, errEnc.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (rr *RevRouter) GetByRevId(w http.ResponseWriter, r *http.Request) {
@@ -39,21 +46,27 @@ func (rr *RevRouter) GetByRevId(w http.ResponseWriter, r *http.Request) {
 	)
 
 	ctx := r.Context()
-	paramsValue := chi.URLParam(r, constRevId)
+	paramsValue := chi.URLParam(r, paramRevId)
 
 	cond.Id, errStr = strconv.Atoi(paramsValue)
 	if errStr != nil {
-		responses.ERROR(w, http.StatusBadRequest, errStr)
+		http.Error(w, errStr.Error(), http.StatusBadRequest)
 		return
 	}
 
-	result, errSel := rr.Repository.SelectReviewByRevId(ctx, cond)
+	result, errSel := rr.Repository.SelectReviewByRevId(ctx, &cond)
 	if errSel != nil {
-		responses.ERROR(w, http.StatusBadRequest, errSel)
+		http.Error(w, errSel.Error(), http.StatusBadRequest)
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, result)
+	w.Header().Set(headerKey, contentTypeJSON)
+	w.WriteHeader(http.StatusOK)
+	errEnc := json.NewEncoder(w).Encode(&result)
+	if errEnc != nil {
+		http.Error(w, errEnc.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (rr *RevRouter) GetByMovId(w http.ResponseWriter, r *http.Request) {
@@ -63,21 +76,27 @@ func (rr *RevRouter) GetByMovId(w http.ResponseWriter, r *http.Request) {
 	)
 
 	ctx := r.Context()
-	paramMovId := chi.URLParam(r, constMovId)
+	paramMovId := chi.URLParam(r, paramMovId)
 
 	cond.MovId, errStr = strconv.Atoi(paramMovId)
 	if errStr != nil {
-		responses.ERROR(w, http.StatusBadRequest, errStr)
+		http.Error(w, errStr.Error(), http.StatusBadRequest)
 		return
 	}
 
-	result, errSel := rr.Repository.SelectReviewsByMovId(ctx, cond)
+	result, errSel := rr.Repository.SelectReviewsByMovId(ctx, &cond)
 	if errSel != nil {
-		responses.ERROR(w, http.StatusBadRequest, errSel)
+		http.Error(w, errSel.Error(), http.StatusBadRequest)
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, result)
+	w.Header().Set(headerKey, contentTypeJSON)
+	w.WriteHeader(http.StatusOK)
+	errEnc := json.NewEncoder(w).Encode(&result)
+	if errEnc != nil {
+		http.Error(w, errEnc.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (rr *RevRouter) GetByUsrId(w http.ResponseWriter, r *http.Request) {
@@ -87,21 +106,27 @@ func (rr *RevRouter) GetByUsrId(w http.ResponseWriter, r *http.Request) {
 	)
 
 	ctx := r.Context()
-	paramMovId := chi.URLParam(r, constUsrId)
+	paramMovId := chi.URLParam(r, paramUsrId)
 
 	cond.MovId, errStr = strconv.Atoi(paramMovId)
 	if errStr != nil {
-		responses.ERROR(w, http.StatusBadRequest, errStr)
+		http.Error(w, errStr.Error(), http.StatusBadRequest)
 		return
 	}
 
-	result, errSel := rr.Repository.SelectReviewsByUsrId(ctx, cond)
+	result, errSel := rr.Repository.SelectReviewsByUsrId(ctx, &cond)
 	if errSel != nil {
-		responses.ERROR(w, http.StatusBadRequest, errSel)
+		http.Error(w, errSel.Error(), http.StatusBadRequest)
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, result)
+	w.Header().Set(headerKey, contentTypeJSON)
+	w.WriteHeader(http.StatusOK)
+	errEnc := json.NewEncoder(w).Encode(&result)
+	if errEnc != nil {
+		http.Error(w, errEnc.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (rr *RevRouter) PostReview(w http.ResponseWriter, r *http.Request) {
@@ -111,17 +136,18 @@ func (rr *RevRouter) PostReview(w http.ResponseWriter, r *http.Request) {
 
 	errDec := json.NewDecoder(r.Body).Decode(&create)
 	if errDec != nil {
-		responses.ERROR(w, http.StatusBadRequest, errDec)
+		http.Error(w, errDec.Error(), http.StatusBadRequest)
 		return
 	}
 
 	errIns := rr.Repository.InsertReview(ctx, &create)
 	if errIns != nil {
-		responses.ERROR(w, http.StatusBadRequest, errIns)
+		http.Error(w, errIns.Error(), http.StatusBadRequest)
 		return
 	}
 
-	responses.JSON(w, http.StatusCreated, nil)
+	w.Header().Set(headerKey, contentTypeJSON)
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (rr *RevRouter) PutReview(w http.ResponseWriter, r *http.Request) {
@@ -133,49 +159,52 @@ func (rr *RevRouter) PutReview(w http.ResponseWriter, r *http.Request) {
 	)
 
 	ctx := r.Context()
-	paramValue := chi.URLParam(r, constRevId)
+	paramValue := chi.URLParam(r, paramRevId)
 
 	cond.Id, errStr = strconv.Atoi(paramValue)
 	if errStr != nil {
-		responses.ERROR(w, http.StatusBadRequest, errStr)
+		http.Error(w, errStr.Error(), http.StatusBadRequest)
 		return
 	}
 
 	errDec := json.NewDecoder(r.Body).Decode(&updates)
 	if errDec != nil {
-		responses.ERROR(w, http.StatusBadRequest, errDec)
+		http.Error(w, errDec.Error(), http.StatusBadRequest)
 		return
 	}
 
 	errUpd := rr.Repository.UpdateReview(ctx, &cond, &updates)
 	if errUpd != nil {
-		responses.ERROR(w, http.StatusBadRequest, errUpd)
+		http.Error(w, errUpd.Error(), http.StatusBadRequest)
 		return
 	}
 
-	responses.JSON(w, http.StatusAccepted, nil)
+	w.Header().Set(headerKey, contentTypeJSON)
+	w.WriteHeader(http.StatusCreated)
+	// 202011032130 TODO: Add output with updates result on database function
 }
 
 func (rr *RevRouter) DeleteReview(w http.ResponseWriter, r *http.Request) {
 	var (
-		deleteRev review.Review
-		errStr    error
+		cond   review.Review
+		errStr error
 	)
 
 	ctx := r.Context()
-	paramValue := chi.URLParam(r, constRevId)
+	paramValue := chi.URLParam(r, paramRevId)
 
-	deleteRev.Id, errStr = strconv.Atoi(paramValue)
+	cond.Id, errStr = strconv.Atoi(paramValue)
 	if errStr != nil {
-		responses.ERROR(w, http.StatusBadRequest, errStr)
+		http.Error(w, errStr.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err := rr.Repository.DeleteReviewByRevId(ctx, deleteRev)
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+	errDel := rr.Repository.DeleteReviewByRevId(ctx, &cond)
+	if errDel != nil {
+		http.Error(w, errDel.Error(), http.StatusBadRequest)
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, nil)
+	w.Header().Set(headerKey, contentTypeJSON)
+	w.WriteHeader(http.StatusCreated)
 }
