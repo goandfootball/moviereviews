@@ -1,24 +1,24 @@
 package user
 
 import (
-	"errors"
 	"gorm.io/gorm"
 	"time"
 
+	validator "github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
 	Id           int       `json:"usr_id,omitempty" gorm:"column:usr_id;primary_key;<-:false"`
 	FirstName    string    `json:"usr_first_name,omitempty" gorm:"column:usr_first_name;not null"`
-	LastName     string    `json:"usr_last_name,omitempty" gorm:"column:usr_last_name;not null"`
-	Username     string    `json:"usr_username,omitempty" gorm:"column:usr_username;unique"`
-	Email        string    `json:"usr_email,omitempty" gorm:"column:usr_email;unique"`
+	LastName     string    `json:"usr_last_name,omitempty" gorm:"column:usr_last_name;not null" validate:"necsfield=FirstName"`
+	Username     string    `json:"usr_username,omitempty" gorm:"column:usr_username;unique" validate:"alphanumunicode"`
+	Email        string    `json:"usr_email,omitempty" gorm:"column:usr_email;unique" validate:"email"`
 	Password     string    `json:"usr_password,omitempty" gorm:"column:usr_password;not null"`
 	Picture      string    `json:"usr_picture,omitempty" gorm:"column:usr_picture"`
 	PasswordHash string    `json:"-" gorm:"-"`
-	CreatedAt    time.Time `json:"usr_created_at,omitempty" gorm:"column:usr_created_at;<-:create;not null"`
-	UpdatedAt    time.Time `json:"usr_updated_at,omitempty" gorm:"column:usr_updated_at"`
+	CreatedAt    time.Time `json:"usr_created_at,omitempty" gorm:"column:usr_created_at;not null;autoCreateTime:nano;<-:create"`
+	UpdatedAt    time.Time `json:"usr_updated_at,omitempty" gorm:"column:usr_updated_at;autoUpdateTime:nano;<-:update"`
 }
 
 func hash(password string) (string, error) {
@@ -43,33 +43,24 @@ func (usr User) PasswordMatch(password string) bool {
 	return true
 }
 
-func (usr *User) Prepare() error {
-	if usr.Id != 0 {
-		return errors.New("id is generated automatically in database")
-	}
-	if usr.FirstName == "" {
-		return errors.New("first name is required")
-	}
-	if usr.LastName == "" {
-		return errors.New("last name is required")
-	}
-	if usr.Username == "" {
-		return errors.New("username name is required")
-	}
-	if usr.Email == "" {
-		return errors.New("email is required")
-	}
-	if usr.Password == "" {
-		return errors.New("password is required")
+func (usr *User) ValidateBeforeInsert() error {
+	val := validator.New()
+
+	err := val.Struct(usr)
+	if err != nil {
+		return err
 	}
 
+	return nil
+}
+
+func (usr *User) Prepare() error {
 	hashedPassword, err := hash(usr.Password)
 	if err != nil {
 		return err
 	}
 
 	usr.Password = hashedPassword
-	usr.CreatedAt = time.Now()
 
 	return nil
 }

@@ -2,6 +2,7 @@ package review
 
 import (
 	"context"
+	"fmt"
 	"github.com/goandfootball/moviereviews/internal/data"
 	"github.com/goandfootball/moviereviews/pkg/review"
 	"github.com/pkg/errors"
@@ -35,7 +36,7 @@ func (dr *DbReview) SelectAllReviews(ctx context.Context) ([]review.Review, erro
 func (dr *DbReview) SelectReviewByRevId(ctx context.Context, cond *review.Review) (review.Review, error) {
 	var dest review.Review
 
-	err := dr.Data.Db.WithContext(ctx).First(&dest, &cond).Error
+	err := dr.Data.Db.WithContext(ctx).Find(&dest, cond).Error
 	if err != nil {
 		return review.Review{}, err
 	}
@@ -46,9 +47,12 @@ func (dr *DbReview) SelectReviewByRevId(ctx context.Context, cond *review.Review
 func (dr *DbReview) SelectReviewsByMovId(ctx context.Context, cond *review.Review) ([]review.Review, error) {
 	var dest []review.Review
 
-	err := dr.Data.Db.WithContext(ctx).Find(&dest, &cond).Error
-	if err != nil {
-		return []review.Review{}, err
+	err := dr.Data.Db.WithContext(ctx).Find(&dest, cond)
+	if err.RowsAffected == 0 {
+		return []review.Review{}, errors.New("movie doesn't exist")
+	}
+	if err.Error != nil {
+		return []review.Review{}, err.Error
 	}
 
 	return dest, nil
@@ -57,20 +61,25 @@ func (dr *DbReview) SelectReviewsByMovId(ctx context.Context, cond *review.Revie
 func (dr *DbReview) SelectReviewsByUsrId(ctx context.Context, cond *review.Review) ([]review.Review, error) {
 	var dest []review.Review
 
-	err := dr.Data.Db.WithContext(ctx).Find(&dest, &cond).Error
-	if err != nil {
-		return []review.Review{}, err
+	err := dr.Data.Db.WithContext(ctx).Find(&dest, cond)
+	fmt.Println(err.RowsAffected)
+	if err.RowsAffected == 0 {
+		return []review.Review{}, errors.New("movie doesn't exist")
+	}
+	if err.Error != nil {
+		return []review.Review{}, err.Error
 	}
 
 	return dest, nil
 }
 
 func (dr *DbReview) InsertReview(ctx context.Context, value *review.Review) error {
-	errBef := value.BeforeInsert(dr.Data.Db)
-	if errBef != nil {
-		return errBef
-	}
-
+	/*
+		errBef := value.BeforeInsert(dr.Data.Db)
+		if errBef != nil {
+			return errBef
+		}
+	*/
 	err := dr.Data.Db.WithContext(ctx).Create(&value).Error
 	if err != nil {
 		return err
